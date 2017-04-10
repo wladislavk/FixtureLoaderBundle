@@ -42,8 +42,8 @@ class LoadInitialDataCommand extends DoctrineCommand
         if (!$fixtureTypeManager instanceof FixtureTypeManager) {
             throw new FixtureLoaderException('Fixture type manager service must extend ' . FixtureTypeManager::class);
         }
-        $purge = boolval($input->getOption(self::PURGE_OPTION_NAME));
-        if ($input->isInteractive() && $purge) {
+        $append = !boolval($input->getOption(self::PURGE_OPTION_NAME));
+        if ($input->isInteractive() && !$append) {
             $question = new ConfirmationQuestion(Constants::PURGE_QUESTION, false);
             $isConfirmed = $questionHelper->ask($input, $output, $question);
             if (!$isConfirmed) {
@@ -54,7 +54,7 @@ class LoadInitialDataCommand extends DoctrineCommand
             $output->writeln(sprintf(Constants::LOGGING_OUTPUT, $message));
         };
         $fixtureTypeManager->setLoggingFunction($loggingFunction);
-        $fixtureTypeManager->loadInitialData($purge);
+        $fixtureTypeManager->loadInitialData($append);
         return null;
     }
 }
