@@ -1,0 +1,38 @@
+services:
+    doctrine.fixtures.container_aware_loader:
+        class: Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader
+        arguments:
+            - "@service_container"
+
+    doctrine.fixtures.orm_executor:
+        class: Doctrine\Common\DataFixtures\Executor\ORMExecutor
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@doctrine.fixtures.orm_purger"
+
+    doctrine.fixtures.orm_purger:
+        class: Doctrine\Common\DataFixtures\Purger\ORMPurger
+        arguments:
+            - "@doctrine.orm.entity_manager"
+
+    vkr_fixture_loader.decorators.filesystem:
+        class: VKR\FixtureLoaderBundle\Decorators\FilesystemDecorator
+
+    vkr_fixture_loader.decorators.data_fixtures_loader:
+        class: VKR\FixtureLoaderBundle\Decorators\DataFixturesLoaderDecorator
+
+    vkr_fixture_loader.fixtures_loader:
+        class: VKR\FixtureLoaderBundle\Services\FixturesLoader
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@doctrine.fixtures.container_aware_loader"
+            - "@doctrine.fixtures.orm_executor"
+            - "@doctrine.fixtures.orm_purger"
+            - "@vkr_fixture_loader.decorators.filesystem"
+            - "@vkr_fixture_loader.decorators.data_fixtures_loader"
+            - "%vkr_fixture_loader.fixture_directory%"
+
+    vkr_fixture_loader.fixture_type_manager:
+        class: VKR\FixtureLoaderBundle\Services\FixtureTypeManager
+        arguments:
+            - "@vkr_fixture_loader.fixtures_loader"
